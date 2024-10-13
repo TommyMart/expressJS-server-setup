@@ -24,7 +24,7 @@ app.post('/', (request, response) => {
     response.send("Data recieved")
 })
 
-// GET http://localhost:3000/queryRouteExample?userId
+// GET QUERY http://localhost:3000/queryRouteExample?userId
 app.get('/queryRouteExample', (request, response) => {
     
     // Extract userId from URL query
@@ -46,8 +46,61 @@ app.get('/queryRouteExample', (request, response) => {
             message: "User not found"
         });
     }
+})
 
-    
+// GET QUERY http://localhost:3000/queryRouteExample?userId&dotw=Monday&weather=hot
+app.get('/queryRouteExample', (request, response) => {
+    // Take userId, find in DB, assign userId to user
+    let userId = request.query.userId;
+    let user = users[userId]
+
+    let dayOfTheWeek = request.query.dotw;
+    let weather = request.query.weather
+
+    let allQueryParams = {}
+
+    // Create an object with all query parameters
+    Object.keys(request.query).forEach(key => {
+        allQueryParams[key] = request.query[key]
+    })
+
+    response.json({
+        "day": dayOfTheWeek,
+        // return name of the user
+        "user": user.name,
+        "weather": weather,
+        allQueryParams: allQueryParams
+    })
+
+    // http://localhost:3000/queryRouteExample?userId=1&dotw=Monday&weather=sunny
+    // assuming Tom is userId 1 in DB
+    // {
+    //     "day": "Monday",
+    //     "user": "Tom", 
+    //     "weather": "sunny",
+    //     "allQueryParams": {
+    //       "userId": "1",
+    //       "dotw": "Monday",
+    //       "weather": "sunny"
+    //     }
+    //   }
+})
+
+// GET PARAMS http://localhost:3000/users/8899
+app.get('/users/:userId', (request, response) => {
+    let userId = request.params.userId;
+
+    if (isNaN(userId)) {
+        response.json({
+            "error": "Provided user ID was not a number"
+        });
+    } else {
+        let message = `User ID is ${userId}!`;
+
+        reponse.json({
+            "message": message
+        })
+    }
 })
 
 // Once the server has been configured, tell it to start listening to web traffic.
