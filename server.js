@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 // Replace with Mongo string
-mongoose.connect('mongodb://localhost:27017/myDatabase', { 
+mongoose.connect('mongodb://localhost:27017/musicAppDB', { 
     useNewUrlParser: true, 
     useUnifiedTopology: true 
 })
@@ -61,7 +61,7 @@ app.post('/signup', async (request, response) => {
 
         // If username exists
         if (existingUsername) {
-            response.status(500).json({ message: 'Username is already in use' })
+            response.status(400).json({ message: 'Username is already in use' })
         }
 
         // Hash the password and then save
@@ -71,11 +71,11 @@ app.post('/signup', async (request, response) => {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         // Create a new user
-        const newUser = await User({ name, username, email, password: hashedPassword });
+        const newUser = new User({ name, username, email, password: hashedPassword });
 
         await newUser.save();
 
-        response.status(400).json({ success: true, message: 'User created successfully'})
+        response.status(201).json({ success: true, message: 'User created successfully'})
         
     } catch (error) {
         console.error('Error during signup: ', error);
