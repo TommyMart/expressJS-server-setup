@@ -7,6 +7,7 @@ const userController = require('../controllers/userController');  // Import the 
 // Define routes for user signup and login, and link them to controller functions
 router.post('/signup', userController.signup);  // Route for user registration
 router.post('/login', userController.login);    // Route for user login
+router.get('/:id', userController.getUserById); // Route to fetch user info
 
 // Export the router so it can be used in other files
 module.exports = router;

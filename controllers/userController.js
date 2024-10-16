@@ -11,7 +11,7 @@ exports.signup = async (request, response) => {
         // Check if email is already in use
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Email is already in use' });
+            return response.status(400).json({ message: 'Email is already in use' });
         }
 
         // Check if username is already in use
@@ -26,7 +26,7 @@ exports.signup = async (request, response) => {
         // Create a new user with the hashed password
         const newUser = new User({ name, username, email, password: hashedPassword });
         await newUser.save();  // Save the new user to the database
-
+        
         // Respond with a success message
         return response.status(201).json({
             success: true,
@@ -34,6 +34,7 @@ exports.signup = async (request, response) => {
             name: newUser.name,  // Return the new user's name
             id: newUser._id      // Return the new user's ID
         });
+
     } catch (error) {
         console.error('Error during signup:', error);  // Log errors if something goes wrong
         return response.status(500).json({ success: false, message: 'Internal server error' });
@@ -71,3 +72,23 @@ exports.login = async (request, response) => {
         return response.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
+
+exports.getUserById = async (request, response) => {
+
+    const { id } = request.params; // Get email from query params
+    try {
+        const user = await User.findById(id); // Find the user in DB
+        if (!user) {
+            return response.status(404).json({ message: 'User not found '})
+        }
+        response.json({ 
+            id: user._id,
+            name: user.name,
+            username: user.username,
+            email: user.email
+        });
+    } catch (error) {
+        console.error('Error fetching the user: ', error);
+        response.status(500).json({ message: 'Internal server error' });
+    }
+}

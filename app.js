@@ -8,7 +8,11 @@ const userRoutes = require('./routes/userRoutes'); // Import user routes
 const app = express();  // Create the Express app
 
 app.use(express.json());  // Middleware to parse JSON bodies
-app.use(cors());          // Enable CORS for all routes
+app.use(cors({          // Enable CORS for all routes
+    origin: '*',  // Allow all origins for testing
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+})); 
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/musicAppDB', { 
@@ -19,7 +23,7 @@ mongoose.connect('mongodb://localhost:27017/musicAppDB', {
     .catch(err => console.error('Mongo connection error:', err));  // Log errors if connection fails
 
 // Use the user routes for any requests starting with /api/users
-app.use('/api/users', userRoutes);  
+app.use('/users', userRoutes);  
 
 // Start the server on port 3000 (or any port set in environment variables)
 const PORT = process.env.PORT || 3000;
