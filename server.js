@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 
@@ -50,36 +50,37 @@ app.post('/signup', async (request, response) => {
     try {
         // Look for user in MongoDB
         const existingUser = await User.findOne({ email });
-
-        // If exists
         if (existingUser) {
-            return response.status(400).json({message: 'Email is already in use'});
+            return response.status(400).json({ message: 'Email is already in use' });
         } 
 
         // Existing username
         const existingUsername = await User.findOne({ username });
-
-        // If username exists
         if (existingUsername) {
-            response.status(400).json({ message: 'Username is already in use' })
+            return response.status(400).json({ message: 'Username is already in use' });
         }
 
-        // Hash the password and then save
-        // 10 is the number of salt rounds. meaning the password is hashed
-        // ten times. Increased salt rounds means more difficult for hackers to 
-        // crack but takes up more processing power.
-        const hashedPassword = await bcrypt.hash(password, 10)
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a new user
         const newUser = new User({ name, username, email, password: hashedPassword });
-
         await newUser.save();
 
-        response.status(201).json({ success: true, message: 'User created successfully'})
+        // Send a response with name and id
+        response.status(201).json({ 
+            success: true, 
+            message: 'User created successfully',
+            name: newUser.name,
+            id: newUser._id // Use _id to return the MongoDB ID
+        });
         
     } catch (error) {
         console.error('Error during signup: ', error);
-        response.status(500).json({ success: false, message: 'Internal server error' });
+        response.status(500).json({ 
+            success: false, 
+            message: 'Internal server error' 
+        });
     }
 });
 
@@ -91,13 +92,22 @@ app.post('/login', async (request, response) => {
         // Find the user by email
         const user = await User.findOne({ email });
         if (!user) {
-            return response.status(400).json({ success: false, message: 'Invalid email address or password' });
+            return response.status(400).json({ 
+                success: false, 
+                message: 'Invalid email address or password' 
+            });
         }
 
         // Compare the hashed password with the provided password
         const match = await bcrypt.compare(password, user.password);
         if (match) {
-            response.json({ success: true, message: 'Login successful' });
+            response.json({ 
+                success: true, 
+                message: 'Login successful', 
+                name: user.name, 
+                username: user.username, 
+                id: user._id // Return user ID created by DB
+            });
         } else {
             response.status(400).json({ success: false, message: 'Invalid email address or password' });
         }
