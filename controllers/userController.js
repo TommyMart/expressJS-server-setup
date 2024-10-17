@@ -2,6 +2,7 @@
 
 const User = require('../models/User');  // Import the user model
 const bcrypt = require('bcrypt');        // Import bcrypt for password hashing
+const jwt = require('jsonwebtoken');
 
 // Function to handle user sign-up (registration)
 exports.signup = async (request, response) => {
@@ -54,14 +55,35 @@ exports.login = async (request, response) => {
 
         // Compare the provided password with the stored (hashed) password
         const match = await bcrypt.compare(password, user.password);
+
         if (match) {
+
+            const secretKey = process.env.JWT_SECRET_KEY
+            let token;
+            try {
+                token = jwt.sign(
+                    {
+                        userId: user._id,
+                        email: user.email
+                    }, 
+                    secretKey,
+                    {expiresIn: "4h"}
+                );
+            } catch (error) {
+                console.log(error);
+                const newError =
+                new Error('Error! Something went wrong.')
+                return next(newError);
+            }
             // If password is correct, return success and user info
             return response.json({
                 success: true,
                 message: 'Login successful',
                 name: user.name,
                 username: user.username,
-                id: user._id
+                email: user.email,
+                id: user._id,
+                token: token
             });
         } else {
             // If password is incorrect, return an error

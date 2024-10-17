@@ -1,9 +1,11 @@
 // app.js
+require('dotenv').config();
 
 const express = require('express');               // Import Express
 const mongoose = require('mongoose');             // Import Mongoose for MongoDB connection
 const cors = require('cors');                     // Import CORS middleware for handling cross-origin requests
 const userRoutes = require('./routes/userRoutes'); // Import user routes
+
 
 const app = express();  // Create the Express app
 
