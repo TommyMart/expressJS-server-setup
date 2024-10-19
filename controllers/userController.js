@@ -1,6 +1,7 @@
 // controllers/userController.js
 
 const User = require('../models/User');  // Import the user model
+const Post = require('../models/post/Post')
 const bcrypt = require('bcrypt');        // Import bcrypt for password hashing
 const jwt = require('jsonwebtoken');
 
@@ -21,6 +22,7 @@ exports.signup = async (request, response) => {
             return response.status(400).json({ message: 'Username is already in use' });
         }
 
+
         // Hash the password for security
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -28,12 +30,33 @@ exports.signup = async (request, response) => {
         const newUser = new User({ name, username, email, password: hashedPassword });
         await newUser.save();  // Save the new user to the database
         
+
+        const secretKey = process.env.JWT_SECRET_KEY
+        let token;
+        try {
+            token = jwt.sign(
+                {
+                    userId: newUser._id,
+                    email: newUser.email
+                }, 
+                secretKey,
+                {expiresIn: "4h"}
+            );
+        } catch (error) {
+            console.log(error);
+            const newError =
+            new Error('Error! Something went wrong.')
+            return next(newError);
+        }
+
         // Respond with a success message
         return response.status(201).json({
             success: true,
             message: 'User created successfully',
             name: newUser.name,  // Return the new user's name
-            id: newUser._id      // Return the new user's ID
+            id: newUser._id,     // Return the new user's ID
+            username: newUser.username,
+            token: token
         });
 
     } catch (error) {
@@ -114,3 +137,57 @@ exports.getUserById = async (request, response) => {
         response.status(500).json({ message: 'Internal server error' });
     }
 }
+
+exports.postNewPost = async (request, response) => {
+    // Destructure
+    // const { content, title, location, tags} = request.body;
+    // const { userId, content, title, location, tags} = request.body;
+    const {  content, title } = request.body;
+
+    // console.log(request.body)
+
+    // Input validation
+    // if (!userId || !content || !title) {
+    //     return response.status(400).json({ message: 'userId, content, and title are required'});
+    // };
+
+    // Input validation
+   if (!content || !title) {
+        return response.status(400).json({ message: 'userId, content, and title are required'});
+    }; 
+
+    try {
+        // Create a new Post object
+        const newPost = new Post({
+            // userId,
+            content,
+            title,
+            // location: location || '', // Optional 
+            // tags: tags || [] // Default to an empty array if tags are not provided
+            // time: new Date()
+        });
+
+        // Save the new post to the database
+        const savedPost = await newPost.save();
+        console.log(savedPost);
+
+        response.status(201).json({
+            message: 'New post created succesfully',
+            post: {
+                id: savedPost._id,
+                // userId: savedPost.userId,
+                content: savedPost.content,
+                title: savedPost.title,
+                // location: savedPost.location,
+                // tags: savedPost.tags,
+                // time: savedPost.time
+            }
+            
+        });
+        console.log('post saved to DB')
+
+    } catch (error) {
+        console.error('Error creating post: ', error);
+        response.status(500).json({ message: 'Internal server error'});
+    }
+};
