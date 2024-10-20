@@ -22,11 +22,11 @@ const postSchema = new mongoose.Schema({
     // tags: {
     //     type: [String] // Array of string tags
     // },
-    // time: {
-    //     type: Date,
-    //     default: Date.now,
-    //     required: true
-    // },
+    time: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
     // comments: [{
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: 'Comment' // References Comment model

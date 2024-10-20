@@ -164,7 +164,7 @@ exports.postNewPost = async (request, response) => {
             title,
             // location: location || '', // Optional 
             // tags: tags || [] // Default to an empty array if tags are not provided
-            // time: new Date()
+            time: new Date()
         });
 
         // Save the new post to the database
@@ -180,7 +180,7 @@ exports.postNewPost = async (request, response) => {
                 title: savedPost.title,
                 // location: savedPost.location,
                 // tags: savedPost.tags,
-                // time: savedPost.time
+                time: savedPost.time
             }
             
         });
@@ -194,7 +194,10 @@ exports.postNewPost = async (request, response) => {
 
 exports.getPosts = async (request, response) => {
     try {
-        const posts = await Post.find().sort({ time: -1 }).limit(10);
+        const posts = await Post.find()
+        .populate('userId', 'username')
+        .sort({ time: -1 })
+        .limit(4);
 
         response.status(200).json({ posts });
     } catch (error) {
@@ -202,3 +205,42 @@ exports.getPosts = async (request, response) => {
         response.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.deletePost =  async (request, response) => {
+    try {
+        const { postId } = request.params;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return response.status(404).json({ message: 'Post not found'})
+        }
+
+        await Post.findByIdAndDelete(postId);
+        return response.status(200).json({ message: 'Post deleted successfully'});
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        return response.status(500).json({ message: 'Internal server error'});
+    }
+    };
+
+exports.editPost = async (request, response) => {
+    try {
+        const { postId } = request.params;
+        const { content, title } = request.body;
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return response.status(404).json({ message: 'Post not found' });
+        } 
+
+        const updatedPost = await Post.findByIdAndUpdate(postId, 
+            {content, title}, // Fields to update
+            { new: true } // Return the updated post
+        )
+
+        return response.status(201).json({ message: 'Post edit successful', post: updatedPost })
+    } catch (error) {
+        console.error('Error editing post:', error);
+        return response.status(500).json({ message: 'Internal server error'})
+    }
+}

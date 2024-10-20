@@ -12,9 +12,12 @@ const app = express();  // Create the Express app
 app.use(express.json());  // Middleware to parse JSON bodies
 app.use(cors({          // Enable CORS for all routes
     origin: '*',  // Allow all origins for testing
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
 })); 
+
+app.options('*', cors());
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/musicAppDB', { 
