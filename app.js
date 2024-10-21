@@ -5,6 +5,7 @@ const express = require('express');               // Import Express
 const mongoose = require('mongoose');             // Import Mongoose for MongoDB connection
 const cors = require('cors');                     // Import CORS middleware for handling cross-origin requests
 const userRoutes = require('./routes/userRoutes'); // Import user routes
+const postRoutes = require('./routes/postRoutes');
 
 
 const app = express();  // Create the Express app
@@ -29,6 +30,9 @@ mongoose.connect('mongodb://localhost:27017/musicAppDB', {
 
 // Use the user routes for any requests starting with /api/users
 app.use('/users', userRoutes);  
+
+// Use the user routes for any requests starting with /api/posts
+app.use('/posts', postRoutes);  
 
 // Start the server on port 3000 (or any port set in environment variables)
 const PORT = process.env.PORT || 3000;
