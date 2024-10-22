@@ -75,10 +75,11 @@ exports.editComment = async (request, response) => {
             return response.status(401).json({ message: 'User not authorized to perform this action'})
         }
 
-        const updatedComment = await Comment.findByIdAndUpdate(commentId,
+        const updatedComment = await Comment.findByIdAndUpdate(
+            commentId,
             { content },
             { new: true }
-        )
+        ).populate('userId', 'username'); // populating to get the username so buttons populate
 
         // Debug log
         console.log(updatedComment);

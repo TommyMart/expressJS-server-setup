@@ -100,12 +100,16 @@ exports.editPost = async (request, response) => {
             return response.status(404).json({ message: 'Post not found' });
         } 
 
-        const updatedPost = await Post.findByIdAndUpdate(postId, 
+        const updatedPost = await Post.findByIdAndUpdate(
+            postId, 
             {content, title}, // Fields to update
             { new: true } // Return the updated post
-        )
+        ).populate('userId', 'username')
 
-        return response.status(201).json({ message: 'Post edit successful', post: updatedPost })
+        // Debug log
+        console.log(updatedPost);
+
+        return response.status(201).json({ message: 'Post edit successful', updatedPost })
     } catch (error) {
         console.error('Error editing post:', error);
         return response.status(500).json({ message: 'Internal server error'})
