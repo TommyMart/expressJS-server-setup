@@ -1,11 +1,12 @@
 // app.js
 require('dotenv').config();
 
-const express = require('express');               // Import Express
-const mongoose = require('mongoose');             // Import Mongoose for MongoDB connection
-const cors = require('cors');                     // Import CORS middleware for handling cross-origin requests
-const userRoutes = require('./routes/userRoutes'); // Import user routes
+const express = require('express');            
+const mongoose = require('mongoose');          
+const cors = require('cors');                     
+const userRoutes = require('./routes/userRoutes'); 
 const postRoutes = require('./routes/postRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 
 
 const app = express();  // Create the Express app
@@ -22,17 +23,16 @@ app.options('*', cors());
 
 // Connect to MongoDB database
 mongoose.connect('mongodb://localhost:27017/musicAppDB', { 
-    useNewUrlParser: true,   // Options (deprecated in new MongoDB versions, but harmless)
+    useNewUrlParser: true,   
     useUnifiedTopology: true 
 })
     .then(() => console.log('Connected to MongoDB'))  // Log if connected successfully
     .catch(err => console.error('Mongo connection error:', err));  // Log errors if connection fails
 
-// Use the user routes for any requests starting with /api/users
+// Use the user routes for any requests starting with /users
 app.use('/users', userRoutes);  
-
-// Use the user routes for any requests starting with /api/posts
 app.use('/posts', postRoutes);  
+app.use('/comments', commentRoutes);
 
 // Start the server on port 3000 (or any port set in environment variables)
 const PORT = process.env.PORT || 3000;
