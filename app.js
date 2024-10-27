@@ -7,14 +7,15 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes'); 
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
+const followRoutes = require('./routes/followRoutes');
 
 
 const app = express();  // Create the Express app
 
 app.use(express.json());  // Middleware to parse JSON bodies
 app.use(cors({          // Enable CORS for all routes
-    origin: '*',  // Allow all origins for testing
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    origin: 'http://localhost:5173',  // Allow all origins for testing
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
 })); 
@@ -33,6 +34,7 @@ mongoose.connect('mongodb://localhost:27017/musicAppDB', {
 app.use('/users', userRoutes);  
 app.use('/posts', postRoutes);  
 app.use('/comments', commentRoutes);
+app.use('/follow', followRoutes);
 
 // Start the server on port 3000 (or any port set in environment variables)
 const PORT = process.env.PORT || 3000;
