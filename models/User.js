@@ -1,6 +1,7 @@
 // models/User.js
 
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 // Define the structure of the user data (name, username, email, password)
 const userSchema = new mongoose.Schema({
@@ -22,7 +23,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,       // The user's password (will be stored hashed)
         required: true      // Password is required
-    }
+    },
+    followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    following: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 });
 
 // Create a model from the schema to interact with the 'users' collection in MongoDB
