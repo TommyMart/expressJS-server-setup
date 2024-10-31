@@ -1,4 +1,4 @@
-const Post = require('../models/post/post');
+const Post = require('../models/post');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 

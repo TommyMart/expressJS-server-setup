@@ -2,7 +2,7 @@
 
 const { isAxiosError } = require('axios');
 const User = require('../models/user');  // Import the user model
-const Post = require('../models/post/post')
+const Post = require('../models/post')
 const bcrypt = require('bcrypt');        // Import bcrypt for password hashing
 const jwt = require('jsonwebtoken');
 
