@@ -23,7 +23,7 @@ const authMiddleware = async (request, response, next) => {
 
         // console.log(decoded)
         request.user = await User.findById(decoded.userId);
-
+        // Check if decoded user exists
         if (!request.user) {
             return response.status(401).json({ message: 'User not found' });
         }

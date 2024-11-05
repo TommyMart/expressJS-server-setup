@@ -8,13 +8,30 @@ const userRoutes = require('./routes/userRoutes');
 const postRoutes = require('./routes/postRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 const followRoutes = require('./routes/followRoutes');
+const helmet = require('helmet');
 
 
 const app = express();  // Create the Express app
-
 app.use(express.json());  // Middleware to parse JSON bodies
-app.use(cors({          // Enable CORS for all routes
-    origin: 'http://localhost:5173',  // Allow all origins for testing
+
+// Configure server security
+try 
+    {
+        app.use(helmet());
+        app.use(helmet.permittedCrossDomainPolicies());
+        app.use(helmet.referrerPolicy());
+        app.use(helmet.contentSecurityPolicy({
+            directives: {
+                defaultSrc: ["'self'"]
+            }
+        }));
+    } catch (error) {
+        console.error('Helmet config error:', error);
+    }
+
+// Configure CORS, add domains to the origin array as needed.
+app.use(cors({          
+    origin: ['http://localhost:5173', "https://deployedApp.com"], // Add deployed app when deployed
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

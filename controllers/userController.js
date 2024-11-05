@@ -1,6 +1,5 @@
 // controllers/userController.js
 
-const { isAxiosError } = require('axios');
 const User = require('../models/user');  // Import the user model
 const Post = require('../models/post')
 const bcrypt = require('bcrypt');        // Import bcrypt for password hashing
@@ -23,7 +22,7 @@ exports.signup = async (request, response) => {
             return response.status(400).json({ message: 'Username is already in use' });
         }
 
-        // Hash the password for security
+        // Hash the password for security, second argumemt is x salt rounds
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a new user with the hashed password
